@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI NEXUS — อนาคตของปัญญาประดิษฐ์</title>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #050810;
+      --surface: #0d1220;
+      --border: rgba(0,200,255,0.15);
+      --accent: #00c8ff;
+      --accent2: #7b2fff;
+      --accent3: #ff2d6b;
+      --text: #e8f4ff;
+      --muted: #6a7f9a;
+      --glow: 0 0 30px rgba(0,200,255,0.3);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Sarabun', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── CANVAS BACKGROUND ── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 3rem;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      background: rgba(5,8,16,0.7);
+    }
+
+    .nav-logo {
+      font-family: 'Chakra Petch', monospace;
+      font-weight: 700;
+      font-size: 1.3rem;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-shadow: var(--glow);
+    }
+
+    .nav-logo span { color: var(--accent3); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+      font-family: 'Chakra Petch', monospace;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    .nav-cta {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 0.5rem 1.4rem;
+      font-family: 'Chakra Petch', monospace;
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .nav-cta:hover {
+      background: var(--accent);
+      color: var(--bg);
+      box-shadow: var(--glow);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid var(--border);
+      padding: 0.4rem 1rem;
+      font-family: 'Chakra Petch', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.4); }
+    }
+
+    .hero h1 {
+      font-family: 'Chakra Petch', monospace;
+      font-weight: 700;
+      font-size: clamp(2.8rem, 8vw, 7rem);
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.9s 0.1s ease both;
+    }
+
+    .hero h1 .line1 { display: block; color: var(--text); }
+    .hero h1 .line2 {
+      display: block;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.7;
+      margin-bottom: 3rem;
+      animation: fadeUp 1s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 1s 0.3s ease both;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      color: #fff;
+      padding: 0.85rem 2.2rem;
+      font-family: 'Chakra Petch', monospace;
+      font-size: 0.9rem;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0,200,255,0.35);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.85rem 2.2rem;
+      font-family: 'Chakra Petch', monospace;
+      font-size: 0.9rem;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(13,18,32,0.6);
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-item {
+      flex: 1;
+      max-width: 220px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      border-right: 1px solid var(--border);
+      animation: fadeUp 1s ease both;
+    }
+
+    .stat-item:last-child { border-right: none; }
+
+    .stat-num {
+      font-family: 'Chakra Petch', monospace;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-top: 0.3rem;
+    }
+
+    /* ── SECTION COMMON ── */
+    section {
+      position: relative;
+      z-index: 2;
+      padding: 6rem 2rem;
+    }
+
+    .section-tag {
+      font-family: 'Chakra Petch', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .section-tag::before {
+      content: '';
+      width: 30px; height: 1px;
+      background: var(--accent);
+    }
+
+    .section-title {
+      font-family: 'Chakra Petch', monospace;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    .section-desc {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+      max-width: 540px;
+    }
+
+    /* ── FEATURES GRID ── */
+    #features {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .features-header {
+      margin-bottom: 4rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .feature-card {
+      background: var(--surface);
+      padding: 2.5rem;
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .feature-card:hover::before { transform: scaleX(1); }
+    .feature-card:hover { background: #101828; }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 1.2rem;
+      display: block;
+    }
+
+    .feature-title {
+      font-family: 'Chakra Petch', monospace;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      color: var(--text);
+    }
+
+    .feature-text {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+
+    /* ── HOW IT WORKS ── */
+    #how {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .how-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step {
+      display: flex;
+      gap: 1.5rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--border);
+      cursor: default;
+      transition: all 0.3s;
+    }
+
+    .step:last-child { border-bottom: none; }
+    .step:hover .step-num { color: var(--accent); border-color: var(--accent); box-shadow: var(--glow); }
+
+    .step-num {
+      font-family: 'Chakra Petch', monospace;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      width: 48px; height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+
+    .step-info h3 {
+      font-family: 'Chakra Petch', monospace;
+      font-size: 1.05rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .step-info p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ── AI BRAIN VISUAL ── */
+    .brain-visual {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brain-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      animation: spin linear infinite;
+    }
+
+    .ring1 { width: 80%; height: 80%; border-top-color: var(--accent); animation-duration: 12s; }
+    .ring2 { width: 60%; height: 60%; border-right-color: var(--accent2); animation-duration: 8s; animation-direction: reverse; }
+    .ring3 { width: 40%; height: 40%; border-bottom-color: var(--accent3); animation-duration: 5s; }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .brain-core {
+      width: 90px; height: 90px;
+      background: radial-gradient(circle, rgba(0,200,255,0.2), transparent);
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      z-index: 1;
+      box-shadow: 0 0 40px rgba(0,200,255,0.25);
+      animation: breathe 3s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(0,200,255,0.25); }
+      50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(0,200,255,0.5); }
+    }
+
+    /* ── CARDS (AI TYPES) ── */
+    #types {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .types-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .type-card {
+      border: 1px solid var(--border);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s;
+    }
+
+    .type-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 60%;
+      background: radial-gradient(ellipse at bottom, rgba(0,200,255,0.07), transparent);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .type-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+    .type-card:hover::after { opacity: 1; }
+
+    .type-emoji { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+
+    .type-name {
+      font-family: 'Chakra Petch', monospace;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .type-desc {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .type-tag {
+      margin-top: 1.2rem;
+      display: inline-block;
+      font-family: 'Chakra Petch', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      padding: 0.25rem 0.7rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    /* ── TIMELINE ── */
+    #timeline {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .timeline-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .timeline {
+      position: relative;
+      margin-top: 3rem;
+      padding-left: 3rem;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent2), var(--accent3));
+    }
+
+    .tl-item {
+      position: relative;
+      padding-bottom: 2.5rem;
+    }
+
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -3rem;
+      top: 0.3rem;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      transform: translateX(-4px);
+      box-shadow: 0 0 12px var(--accent);
+    }
+
+    .tl-year {
+      font-family: 'Chakra Petch', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      margin-bottom: 0.3rem;
+    }
+
+    .tl-title {
+      font-family: 'Chakra Petch', monospace;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .tl-desc {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      max-width: 600px;
+    }
+
+    /* ── CTA ── */
+    #cta {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .cta-glow {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(123,47,255,0.15), transparent);
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: 'Chakra Petch', monospace;
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 1rem;
+      letter-spacing: 0.15em;
+    }
+
+    .footer-copy {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .how-inner { grid-template-columns: 1fr; }
+      .brain-visual { display: none; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">AI<span>_</span>NEXUS</div>
+  <ul class="nav-links">
+    <li><a href="#features">ฟีเจอร์</a></li>
+    <li><a href="#how">วิธีทำงาน</a></li>
+    <li><a href="#types">ประเภท AI</a></li>
+    <li><a href="#timeline">ประวัติ</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">เริ่มต้น →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">ยุคใหม่ของปัญญาประดิษฐ์ — 2025</div>
+  <h1>
+    <span class="line1">สำรวจโลกแห่ง</span>
+    <span class="line2">ปัญญาประดิษฐ์</span>
+  </h1>
+  <p class="hero-sub">
+    AI กำลังเปลี่ยนแปลงทุกอุตสาหกรรม ตั้งแต่การแพทย์ไปจนถึงศิลปะ
+    มาร่วมเรียนรู้และเข้าใจเทคโนโลยีที่กำลังกำหนดอนาคตของมนุษยชาติ
+  </p>
+  <div class="hero-actions">
+    <a href="#features" class="btn-primary">สำรวจเพิ่มเติม</a>
+    <a href="#timeline" class="btn-outline">ประวัติ AI</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-num" data-target="500">0</span>
+    <span class="stat-label">พันล้านดอลลาร์ มูลค่าตลาด AI</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" data-target="97">0</span>
+    <span class="stat-label">% ความแม่นยำในการจดจำภาพ</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" data-target="85">0</span>
+    <span class="stat-label">% ของบริษัทใช้ AI ในปี 2025</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" data-target="1000">0</span>
+    <span class="stat-label">+ แบบจำลอง AI ในตลาด</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section>
+  <div id="features">
+    <div class="features-header reveal">
+      <div class="section-tag">ความสามารถหลัก</div>
+      <h2 class="section-title">AI ทำอะไรได้บ้าง?</h2>
+      <p class="section-desc">ปัญญาประดิษฐ์ในยุคปัจจุบันมีความสามารถที่หลากหลาย ครอบคลุมทุกด้านของชีวิต</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <span class="feature-icon">🧠</span>
+        <div class="feature-title">การเรียนรู้ของเครื่อง</div>
+        <p class="feature-text">ระบบ AI สามารถเรียนรู้จากข้อมูลจำนวนมหาศาล และพัฒนาความสามารถอย่างต่อเนื่อง โดยไม่ต้องตั้งโปรแกรมทุกกรณี</p>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">💬</span>
+        <div class="feature-title">การประมวลภาษาธรรมชาติ</div>
+        <p class="feature-text">เข้าใจและสร้างภาษามนุษย์ได้อย่างเป็นธรรมชาติ ตอบคำถาม แปลภาษา และสรุปข้อมูลได้อย่างแม่นยำ</p>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">👁️</span>
+        <div class="feature-title">การมองเห็นของคอมพิวเตอร์</div>
+        <p class="feature-text">วิเคราะห์ภาพและวิดีโอ จดจำใบหน้า ตรวจจับวัตถุ และอ่านเอกสารได้อย่างรวดเร็วและแม่นยำ</p>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">🎨</span>
+        <div class="feature-title">การสร้างสรรค์เชิงสร้างสรรค์</div>
+        <p class="feature-text">สร้างภาพ เสียง ดนตรี และข้อความเชิงสร้างสรรค์ ช่วยศิลปินและนักออกแบบขยายขีดความสามารถ</p>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">🔬</span>
+        <div class="feature-title">การวิจัยและวิทยาศาสตร์</div>
+        <p class="feature-text">เร่งการค้นพบยาใหม่ ค้นหารูปแบบในข้อมูลขนาดใหญ่ และช่วยนักวิทยาศาสตร์แก้ปัญหาซับซ้อน</p>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">🤖</span>
+        <div class="feature-title">หุ่นยนต์และออโตเมชั่น</div>
+        <p class="feature-text">ควบคุมหุ่นยนต์ในโรงงาน รถยนต์ไร้คนขับ และระบบอัตโนมัติในหลายอุตสาหกรรม</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="how-inner">
+    <div>
+      <div class="section-tag reveal">กระบวนการ</div>
+      <h2 class="section-title reveal">AI ทำงานอย่างไร?</h2>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-num">01</div>
+          <div class="step-info">
+            <h3>รวบรวมข้อมูล</h3>
+            <p>AI เรียนรู้จากข้อมูลจำนวนมหาศาล ไม่ว่าจะเป็นข้อความ รูปภาพ เสียง หรือตัวเลข</p>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">02</div>
+          <div class="step-info">
+            <h3>ฝึกอบรมโมเดล</h3>
+            <p>ใช้อัลกอริทึมการเรียนรู้เพื่อหารูปแบบและความสัมพันธ์ในข้อมูลผ่านการคำนวณหลายพันล้านครั้ง</p>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">03</div>
+          <div class="step-info">
+            <h3>ทดสอบและปรับแต่ง</h3>
+            <p>ประเมินประสิทธิภาพ ปรับแก้ข้อผิดพลาด และพัฒนาความแม่นยำอย่างต่อเนื่อง</p>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">04</div>
+          <div class="step-info">
+            <h3>นำไปใช้งานจริง</h3>
+            <p>นำโมเดลที่ผ่านการฝึกไปใช้แก้ปัญหาจริง และเรียนรู้เพิ่มเติมจากการใช้งาน</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="brain-visual">
+      <div class="brain-ring ring1"></div>
+      <div class="brain-ring ring2"></div>
+      <div class="brain-ring ring3"></div>
+      <div class="brain-core">🧠</div>
+    </div>
+  </div>
+</section>
+
+<!-- TYPES -->
+<section>
+  <div id="types">
+    <div class="reveal">
+      <div class="section-tag">ประเภท</div>
+      <h2 class="section-title">ประเภทของ AI</h2>
+      <p class="section-desc">AI มีหลายรูปแบบ แต่ละประเภทมีความเชี่ยวชาญและการนำไปใช้งานที่แตกต่างกัน</p>
+    </div>
+    <div class="types-grid">
+      <div class="type-card reveal">
+        <span class="type-emoji">💡</span>
+        <div class="type-name">AI แบบแคบ (Narrow AI)</div>
+        <p class="type-desc">เชี่ยวชาญเฉพาะด้าน เช่น การแนะนำเนื้อหา การจดจำเสียง หรือการแปลภาษา เป็น AI ที่เราใช้อยู่ทุกวัน</p>
+        <span class="type-tag">ปัจจุบัน</span>
+      </div>
+      <div class="type-card reveal">
+        <span class="type-emoji">🌐</span>
+        <div class="type-name">AI ทั่วไป (General AI)</div>
+        <p class="type-desc">สามารถทำงานได้หลายอย่างเหมือนมนุษย์ เรียนรู้และปรับตัวกับงานใหม่ได้โดยไม่ต้องฝึกเพิ่ม</p>
+        <span class="type-tag">กำลังพัฒนา</span>
+      </div>
+      <div class="type-card reveal">
+        <span class="type-emoji">⚡</span>
+        <div class="type-name">Super AI</div>
+        <p class="type-desc">AI ที่ฉลาดกว่ามนุษย์ในทุกด้าน เป็นแนวคิดในอนาคตที่นักวิทยาศาสตร์และนักปรัชญายังถกเถียงกัน</p>
+        <span class="type-tag">ทฤษฎี</span>
+      </div>
+      <div class="type-card reveal">
+        <span class="type-emoji">🔄</span>
+        <div class="type-name">Generative AI</div>
+        <p class="type-desc">สร้างเนื้อหาใหม่ได้ ไม่ว่าจะเป็นข้อความ รูปภาพ โค้ด หรือเสียง เช่น ChatGPT, Midjourney</p>
+        <span class="type-tag">กำลังฮิต</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline">
+  <div class="timeline-inner">
+    <div class="reveal">
+      <div class="section-tag">ประวัติศาสตร์</div>
+      <h2 class="section-title">เส้นทางของ AI</h2>
+      <p class="section-desc">จากแนวคิดในจินตนาการสู่เทคโนโลยีที่เปลี่ยนโลก</p>
+    </div>
+    <div class="timeline">
+      <div class="tl-item reveal">
+        <div class="tl-year">1950</div>
+        <div class="tl-title">Alan Turing เสนอ Turing Test</div>
+        <p class="tl-desc">Turing ตั้งคำถามว่า "เครื่องจักรสามารถคิดได้หรือไม่?" วางรากฐานทางปรัชญาของ AI สมัยใหม่</p>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-year">1956</div>
+        <div class="tl-title">กำเนิดคำว่า "Artificial Intelligence"</div>
+        <p class="tl-desc">John McCarthy บัญญัติคำว่า AI ในการประชุม Dartmouth Conference จุดเริ่มต้นของสาขาวิชา</p>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-year">1997</div>
+        <div class="tl-title">Deep Blue ชนะ Garry Kasparov</div>
+        <p class="tl-desc">คอมพิวเตอร์ IBM เอาชนะแชมป์หมากรุกโลก เป็นครั้งแรกที่ AI เอาชนะมนุษย์ระดับโลก</p>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-year">2012</div>
+        <div class="tl-title">การปฏิวัติ Deep Learning</div>
+        <p class="tl-desc">AlexNet แสดงให้เห็นพลังของ Deep Neural Networks ในการจดจำภาพ เริ่มยุคใหม่ของ AI</p>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-year">2022</div>
+        <div class="tl-title">ChatGPT เปลี่ยนโลก</div>
+        <p class="tl-desc">OpenAI เปิดตัว ChatGPT ที่ได้รับผู้ใช้ 100 ล้านคนในเวลาเพียง 2 เดือน AI กลายเป็นกระแสหลัก</p>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-year">2025</div>
+        <div class="tl-title">ยุค Agentic AI</div>
+        <p class="tl-desc">AI ไม่ใช่แค่ตอบคำถาม แต่สามารถวางแผน ลงมือทำ และแก้ปัญหาซับซ้อนได้อย่างอิสระ</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section>
+  <div id="cta" class="reveal">
+    <div class="cta-glow"></div>
+    <div class="section-tag" style="justify-content:center">เริ่มต้นวันนี้</div>
+    <h2 class="section-title" style="font-size:clamp(2rem,5vw,3.5rem)">พร้อมสำรวจ<br>โลก AI แล้วหรือยัง?</h2>
+    <p class="section-desc" style="margin:1.5rem auto 2.5rem;text-align:center">
+      AI ไม่ใช่เรื่องของอนาคต — มันอยู่ในมือคุณแล้ววันนี้
+      เริ่มเรียนรู้และปรับตัวเพื่อรับมือกับโลกที่กำลังเปลี่ยนแปลง
+    </p>
+    <a href="#features" class="btn-primary" style="font-size:1rem;padding:1rem 3rem">สำรวจ AI ตอนนี้ →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">AI_NEXUS</div>
+  <div class="footer-copy">© 2025 AI Nexus — ความรู้เรื่อง AI สำหรับทุกคน</div>
+</footer>
+
+<script>
+  /* ── CANVAS PARTICLE NETWORK ── */
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function createParticles() {
+    particles = [];
+    const count = Math.floor((W * H) / 18000);
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        r: Math.random() * 1.5 + 0.5,
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,200,255,0.35)';
+      ctx.fill();
+    });
+    particles.forEach((a, i) => {
+      particles.slice(i + 1).forEach(b => {
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = `rgba(0,200,255,${0.12 * (1 - dist / 120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      });
+    });
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', () => { resize(); createParticles(); });
+  resize(); createParticles(); draw();
+
+  /* ── COUNTER ANIMATION ── */
+  function animateCounter(el, target, suffix = '') {
+    let current = 0;
+    const step = target / 60;
+    const timer = setInterval(() => {
+      current += step;
+      if (current >= target) { current = target; clearInterval(timer); }
+      el.textContent = Math.floor(current) + suffix;
+    }, 20);
+  }
+
+  const counters = document.querySelectorAll('.stat-num');
+  const statsObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const el = e.target;
+        animateCounter(el, +el.dataset.target);
+        statsObs.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => statsObs.observe(c));
+
+  /* ── SCROLL REVEAL ── */
+  const reveals = document.querySelectorAll('.reveal');
+  const revObs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        revObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(r => revObs.observe(r));
+</script>
+</body>
+</html>
