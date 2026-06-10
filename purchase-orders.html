@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXUS ERP — ใบสั่งซื้อ</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Sarabun:wght@300;400;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="shared.css" />
+    <style>
+        .po-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: .9rem 1.2rem;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            margin-bottom: .5rem;
+            transition: border-color .2s;
+        }
+
+        .po-item:hover {
+            border-color: var(--border2);
+            cursor: pointer;
+        }
+
+        .po-number {
+            font-family: 'Chakra Petch', monospace;
+            font-size: .88rem;
+            color: var(--accent);
+            min-width: 100px;
+        }
+
+        .po-status {
+            font-family: 'Chakra Petch', monospace;
+            font-size: .67rem;
+            letter-spacing: .08em;
+            padding: .2rem .6rem;
+            border: 1px solid;
+        }
+
+        .po-status.pending {
+            color: var(--yellow);
+            border-color: rgba(255, 196, 43, .3);
+        }
+
+        .po-status.approved {
+            color: var(--green);
+            border-color: rgba(0, 232, 150, .3);
+        }
+
+        .po-status.received {
+            color: var(--muted);
+            border-color: var(--border);
+        }
+
+        .po-total {
+            font-family: 'Chakra Petch', monospace;
+            font-size: .88rem;
+            color: var(--green);
+            margin-left: auto;
+        }
+
+        .po-date {
+            font-size: .75rem;
+            color: var(--muted);
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="bg-canvas"></canvas>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">NEXUS<span>_</span>ERP<div style="flex:1"></div>
+        </div>
+        <div style="padding:.3rem 0"></div>
+        <div class="sidebar-section">หน้าหลัก</div>
+        <a class="nav-item" href="index.html"><span class="icon">⬡</span> Dashboard</a>
+        <a class="nav-item" href="reports.html"><span class="icon">📊</span> รายงาน</a>
+        <div class="sidebar-section">สินค้าคงคลัง</div>
+        <a class="nav-item" href="inventory.html"><span class="icon">📦</span> จัดการสินค้า <span
+                class="nav-badge">AI</span></a>
+        <a class="nav-item" href="stock-movement.html"><span class="icon">🔄</span> รับ / เบิกสินค้า</a>
+        <a class="nav-item" href="alerts.html"><span class="icon">⚠️</span> แจ้งเตือนสต็อก</a>
+        <a class="nav-item" href="categories.html"><span class="icon">🏷️</span> หมวดหมู่</a>
+        <div class="sidebar-section">จัดซื้อ / ขาย</div>
+        <a class="nav-item active" href="purchase-orders.html"><span class="icon">🛒</span> ใบสั่งซื้อ</a>
+        <a class="nav-item" href="sales-orders.html"><span class="icon">📋</span> ใบสั่งขาย</a>
+        <a class="nav-item" href="suppliers.html"><span class="icon">🏭</span> ผู้จัดจำหน่าย</a>
+        <div class="sidebar-section">ระบบ</div>
+        <a class="nav-item" href="settings.html"><span class="icon">⚙️</span> ตั้งค่า</a>
+        <div class="sidebar-bottom">
+            <div class="user-info">
+                <div class="user-avatar">👤</div>
+                <div>
+                    <div class="user-name">Admin</div>
+                    <div class="user-role">ผู้ดูแลระบบ</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-title">ใบสั่งซื้อ <span>/ Purchase Orders</span></div>
+            <button class="topbar-btn" onclick="showToast('เปิดฟอร์มสร้างใบสั่งซื้อ','🛒')">+ สร้างใบสั่งซื้อ</button>
+            <div class="notif-btn">🔔<span class="notif-dot"></span></div>
+        </div>
+        <div class="page">
+            <!-- KPI -->
+            <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:1.5rem">
+                <div class="kpi-card c1">
+                    <div class="kpi-label">ใบสั่งซื้อทั้งหมด</div>
+                    <div class="kpi-value accent">12</div>
+                    <div class="kpi-change up">↑ 3 ฉบับนี้เดือน</div>
+                    <div class="kpi-icon">🛒</div>
+                </div>
+                <div class="kpi-card c3">
+                    <div class="kpi-label">รอการอนุมัติ</div>
+                    <div class="kpi-value yellow">3</div>
+                    <div class="kpi-change down">⚠ ต้องดำเนินการ</div>
+                    <div class="kpi-icon">⏳</div>
+                </div>
+                <div class="kpi-card c2">
+                    <div class="kpi-label">ยอดรวมเดือนนี้</div>
+                    <div class="kpi-value green">฿284,500</div>
+                    <div class="kpi-change up">↑ 12% จากเดือนที่แล้ว</div>
+                    <div class="kpi-icon">💰</div>
+                </div>
+            </div>
+
+            <!-- List -->
+            <div class="sec-header">
+                <div class="sec-title">รายการใบสั่งซื้อ</div>
+            </div>
+            <div style="margin-top:1rem" id="poList"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"><span id="toastIcon">✅</span><span id="toastMsg"></span></div>
+    <script src="shared.js"></script>
+    <script>
+        /* ── ข้อมูลตัวอย่าง (แก้ไขได้ที่นี่) ── */
+        const purchaseOrders = [
+            { no: 'PO-2024-012', supplier: 'บริษัท Samsung (Thailand)', items: 5, total: 64500, status: 'pending', date: '10 มิ.ย. 2567' },
+            { no: 'PO-2024-011', supplier: 'Sony Thailand', items: 3, total: 29970, status: 'approved', date: '8 มิ.ย. 2567' },
+            { no: 'PO-2024-010', supplier: 'ASUS Thailand', items: 2, total: 45800, status: 'received', date: '5 มิ.ย. 2567' },
+            { no: 'PO-2024-009', supplier: 'Daikin Thailand', items: 4, total: 75600, status: 'pending', date: '3 มิ.ย. 2567' },
+            { no: 'PO-2024-008', supplier: 'Uniqlo Thailand', items: 8, total: 18500, status: 'approved', date: '1 มิ.ย. 2567' },
+            { no: 'PO-2024-007', supplier: 'บริษัท Samsung (Thailand)', items: 6, total: 50130, status: 'received', date: '28 พ.ค. 2567' },
+        ];
+        const statusLabel = { pending: 'รอการอนุมัติ', approved: 'อนุมัติแล้ว', received: 'รับสินค้าแล้ว' };
+
+        document.getElementById('poList').innerHTML = purchaseOrders.map(p => `
+  <div class="po-item" onclick="showToast('เปิดรายละเอียด ${p.no}','📋')">
+    <div class="po-number">${p.no}</div>
+    <div style="flex:1">
+      <div style="font-size:.88rem">${p.supplier}</div>
+      <div style="font-size:.72rem;color:var(--muted)">${p.items} รายการ</div>
+    </div>
+    <span class="po-status ${p.status}">${statusLabel[p.status]}</span>
+    <span class="po-total">฿${p.total.toLocaleString('th-TH')}</span>
+    <span class="po-date">${p.date}</span>
+  </div>`
+        ).join('');
+
+        initCanvas();
+    </script>
+</body>
+
+</html>
