@@ -1,344 +1,248 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI NEXUS — อนาคตของปัญญาประดิษฐ์</title>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXUS ERP — Dashboard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Sarabun:wght@300;400;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    /* ── styles เฉพาะหน้า Dashboard ── */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: .7rem;
+      margin-top: 1rem;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      padding: .65rem .9rem;
+      border: 1px solid var(--border);
+      background: rgba(0, 200, 255, .02);
+      font-size: .84rem;
+    }
+
+    .activity-time {
+      font-family: 'Chakra Petch', monospace;
+      font-size: .68rem;
+      color: var(--muted);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .quick-stats {
+      display: flex;
+      flex-direction: column;
+      gap: .8rem;
+      margin-top: 1rem;
+    }
+
+    .qs-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: .6rem .9rem;
+      background: rgba(0, 200, 255, .03);
+      border: 1px solid var(--border);
+    }
+
+    .qs-label {
+      font-size: .82rem;
+      color: var(--muted);
+    }
+
+    .qs-val {
+      font-family: 'Chakra Petch', monospace;
+      font-size: .9rem;
+    }
+  </style>
 </head>
+
 <body>
 
-<canvas id="bg-canvas"></canvas>
+  <canvas id="bg-canvas"></canvas>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-logo">AI<span>_</span>NEXUS</div>
-  <ul class="nav-links">
-    <li><a href="#features">ฟีเจอร์</a></li>
-    <li><a href="#how">วิธีทำงาน</a></li>
-    <li><a href="#types">ประเภท AI</a></li>
-    <li><a href="#timeline">ประวัติ</a></li>
-  </ul>
-  <a href="#cta" class="nav-cta">เริ่มต้น →</a>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-badge">ยุคใหม่ของปัญญาประดิษฐ์ — 2025</div>
-  <h1>
-    <span class="line1">สำรวจโลกแห่ง</span>
-    <span class="line2">ปัญญาประดิษฐ์</span>
-  </h1>
-  <p class="hero-sub">
-    AI กำลังเปลี่ยนแปลงทุกอุตสาหกรรม ตั้งแต่การแพทย์ไปจนถึงศิลปะ
-    มาร่วมเรียนรู้และเข้าใจเทคโนโลยีที่กำลังกำหนดอนาคตของมนุษยชาติ
-  </p>
-  <div class="hero-actions">
-    <a href="#features" class="btn-primary">สำรวจเพิ่มเติม</a>
-    <a href="#timeline" class="btn-outline">ประวัติ AI</a>
-  </div>
-</section>
-
-<!-- STATS -->
-<div class="stats-bar">
-  <div class="stat-item">
-    <span class="stat-num" data-target="500">0</span>
-    <span class="stat-label">พันล้านดอลลาร์ มูลค่าตลาด AI</span>
-  </div>
-  <div class="stat-item">
-    <span class="stat-num" data-target="97">0</span>
-    <span class="stat-label">% ความแม่นยำในการจดจำภาพ</span>
-  </div>
-  <div class="stat-item">
-    <span class="stat-num" data-target="85">0</span>
-    <span class="stat-label">% ของบริษัทใช้ AI ในปี 2025</span>
-  </div>
-  <div class="stat-item">
-    <span class="stat-num" data-target="1000">0</span>
-    <span class="stat-label">+ แบบจำลอง AI ในตลาด</span>
-  </div>
-</div>
-
-<!-- FEATURES -->
-<section>
-  <div id="features">
-    <div class="features-header reveal">
-      <div class="section-tag">ความสามารถหลัก</div>
-      <h2 class="section-title">AI ทำอะไรได้บ้าง?</h2>
-      <p class="section-desc">ปัญญาประดิษฐ์ในยุคปัจจุบันมีความสามารถที่หลากหลาย ครอบคลุมทุกด้านของชีวิต</p>
+  <aside class="sidebar">
+    <div class="sidebar-logo">NEXUS<span>_</span>ERP<div style="flex:1"></div>
     </div>
-    <div class="features-grid">
-      <div class="feature-card reveal">
-        <span class="feature-icon">🧠</span>
-        <div class="feature-title">การเรียนรู้ของเครื่อง</div>
-        <p class="feature-text">ระบบ AI สามารถเรียนรู้จากข้อมูลจำนวนมหาศาล และพัฒนาความสามารถอย่างต่อเนื่อง โดยไม่ต้องตั้งโปรแกรมทุกกรณี</p>
-      </div>
-      <div class="feature-card reveal">
-        <span class="feature-icon">💬</span>
-        <div class="feature-title">การประมวลภาษาธรรมชาติ</div>
-        <p class="feature-text">เข้าใจและสร้างภาษามนุษย์ได้อย่างเป็นธรรมชาติ ตอบคำถาม แปลภาษา และสรุปข้อมูลได้อย่างแม่นยำ</p>
-      </div>
-      <div class="feature-card reveal">
-        <span class="feature-icon">👁️</span>
-        <div class="feature-title">การมองเห็นของคอมพิวเตอร์</div>
-        <p class="feature-text">วิเคราะห์ภาพและวิดีโอ จดจำใบหน้า ตรวจจับวัตถุ และอ่านเอกสารได้อย่างรวดเร็วและแม่นยำ</p>
-      </div>
-      <div class="feature-card reveal">
-        <span class="feature-icon">🎨</span>
-        <div class="feature-title">การสร้างสรรค์เชิงสร้างสรรค์</div>
-        <p class="feature-text">สร้างภาพ เสียง ดนตรี และข้อความเชิงสร้างสรรค์ ช่วยศิลปินและนักออกแบบขยายขีดความสามารถ</p>
-      </div>
-      <div class="feature-card reveal">
-        <span class="feature-icon">🔬</span>
-        <div class="feature-title">การวิจัยและวิทยาศาสตร์</div>
-        <p class="feature-text">เร่งการค้นพบยาใหม่ ค้นหารูปแบบในข้อมูลขนาดใหญ่ และช่วยนักวิทยาศาสตร์แก้ปัญหาซับซ้อน</p>
-      </div>
-      <div class="feature-card reveal">
-        <span class="feature-icon">🤖</span>
-        <div class="feature-title">หุ่นยนต์และออโตเมชั่น</div>
-        <p class="feature-text">ควบคุมหุ่นยนต์ในโรงงาน รถยนต์ไร้คนขับ และระบบอัตโนมัติในหลายอุตสาหกรรม</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section id="how">
-  <div class="how-inner">
-    <div>
-      <div class="section-tag reveal">กระบวนการ</div>
-      <h2 class="section-title reveal">AI ทำงานอย่างไร?</h2>
-      <div class="steps">
-        <div class="step reveal">
-          <div class="step-num">01</div>
-          <div class="step-info">
-            <h3>รวบรวมข้อมูล</h3>
-            <p>AI เรียนรู้จากข้อมูลจำนวนมหาศาล ไม่ว่าจะเป็นข้อความ รูปภาพ เสียง หรือตัวเลข</p>
-          </div>
-        </div>
-        <div class="step reveal">
-          <div class="step-num">02</div>
-          <div class="step-info">
-            <h3>ฝึกอบรมโมเดล</h3>
-            <p>ใช้อัลกอริทึมการเรียนรู้เพื่อหารูปแบบและความสัมพันธ์ในข้อมูลผ่านการคำนวณหลายพันล้านครั้ง</p>
-          </div>
-        </div>
-        <div class="step reveal">
-          <div class="step-num">03</div>
-          <div class="step-info">
-            <h3>ทดสอบและปรับแต่ง</h3>
-            <p>ประเมินประสิทธิภาพ ปรับแก้ข้อผิดพลาด และพัฒนาความแม่นยำอย่างต่อเนื่อง</p>
-          </div>
-        </div>
-        <div class="step reveal">
-          <div class="step-num">04</div>
-          <div class="step-info">
-            <h3>นำไปใช้งานจริง</h3>
-            <p>นำโมเดลที่ผ่านการฝึกไปใช้แก้ปัญหาจริง และเรียนรู้เพิ่มเติมจากการใช้งาน</p>
-          </div>
+    <div style="padding:.3rem 0"></div>
+    <div class="sidebar-section">หน้าหลัก</div>
+    <a class="nav-item active" href="index.html"><span class="icon">⬡</span> Dashboard</a>
+    <a class="nav-item" href="reports.html"><span class="icon">📊</span> รายงาน</a>
+    <div class="sidebar-section">สินค้าคงคลัง</div>
+    <a class="nav-item" href="inventory.html"><span class="icon">📦</span> จัดการสินค้า <span
+        class="nav-badge">AI</span></a>
+    <a class="nav-item" href="stock-movement.html"><span class="icon">🔄</span> รับ / เบิกสินค้า</a>
+    <a class="nav-item" href="alerts.html"><span class="icon">⚠️</span> แจ้งเตือนสต็อก <span class="nav-badge"
+        id="alertBadge">-</span></a>
+    <a class="nav-item" href="categories.html"><span class="icon">🏷️</span> หมวดหมู่</a>
+    <div class="sidebar-section">จัดซื้อ / ขาย</div>
+    <a class="nav-item" href="purchase-orders.html"><span class="icon">🛒</span> ใบสั่งซื้อ</a>
+    <a class="nav-item" href="sales-orders.html"><span class="icon">📋</span> ใบสั่งขาย</a>
+    <a class="nav-item" href="suppliers.html"><span class="icon">🏭</span> ผู้จัดจำหน่าย</a>
+    <div class="sidebar-section">ระบบ</div>
+    <a class="nav-item" href="settings.html"><span class="icon">⚙️</span> ตั้งค่า</a>
+    <div class="sidebar-bottom">
+      <div class="user-info">
+        <div class="user-avatar">👤</div>
+        <div>
+          <div class="user-name">Admin</div>
+          <div class="user-role">ผู้ดูแลระบบ</div>
         </div>
       </div>
     </div>
-    <div class="brain-visual">
-      <div class="brain-ring ring1"></div>
-      <div class="brain-ring ring2"></div>
-      <div class="brain-ring ring3"></div>
-      <div class="brain-core">🧠</div>
-    </div>
-  </div>
-</section>
+  </aside>
 
-<!-- TYPES -->
-<section>
-  <div id="types">
-    <div class="reveal">
-      <div class="section-tag">ประเภท</div>
-      <h2 class="section-title">ประเภทของ AI</h2>
-      <p class="section-desc">AI มีหลายรูปแบบ แต่ละประเภทมีความเชี่ยวชาญและการนำไปใช้งานที่แตกต่างกัน</p>
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title">Dashboard <span>/ ภาพรวมระบบ</span></div>
+      <div class="auto-indicator"><span class="auto-dot"></span> LIVE</div>
+      <div class="notif-btn" onclick="showToast('ตรวจสอบการแจ้งเตือนแล้ว','✅')">🔔<span class="notif-dot"></span></div>
     </div>
-    <div class="types-grid">
-      <div class="type-card reveal">
-        <span class="type-emoji">💡</span>
-        <div class="type-name">AI แบบแคบ (Narrow AI)</div>
-        <p class="type-desc">เชี่ยวชาญเฉพาะด้าน เช่น การแนะนำเนื้อหา การจดจำเสียง หรือการแปลภาษา เป็น AI ที่เราใช้อยู่ทุกวัน</p>
-        <span class="type-tag">ปัจจุบัน</span>
-      </div>
-      <div class="type-card reveal">
-        <span class="type-emoji">🌐</span>
-        <div class="type-name">AI ทั่วไป (General AI)</div>
-        <p class="type-desc">สามารถทำงานได้หลายอย่างเหมือนมนุษย์ เรียนรู้และปรับตัวกับงานใหม่ได้โดยไม่ต้องฝึกเพิ่ม</p>
-        <span class="type-tag">กำลังพัฒนา</span>
-      </div>
-      <div class="type-card reveal">
-        <span class="type-emoji">⚡</span>
-        <div class="type-name">Super AI</div>
-        <p class="type-desc">AI ที่ฉลาดกว่ามนุษย์ในทุกด้าน เป็นแนวคิดในอนาคตที่นักวิทยาศาสตร์และนักปรัชญายังถกเถียงกัน</p>
-        <span class="type-tag">ทฤษฎี</span>
-      </div>
-      <div class="type-card reveal">
-        <span class="type-emoji">🔄</span>
-        <div class="type-name">Generative AI</div>
-        <p class="type-desc">สร้างเนื้อหาใหม่ได้ ไม่ว่าจะเป็นข้อความ รูปภาพ โค้ด หรือเสียง เช่น ChatGPT, Midjourney</p>
-        <span class="type-tag">กำลังฮิต</span>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- TIMELINE -->
-<section id="timeline">
-  <div class="timeline-inner">
-    <div class="reveal">
-      <div class="section-tag">ประวัติศาสตร์</div>
-      <h2 class="section-title">เส้นทางของ AI</h2>
-      <p class="section-desc">จากแนวคิดในจินตนาการสู่เทคโนโลยีที่เปลี่ยนโลก</p>
-    </div>
-    <div class="timeline">
-      <div class="tl-item reveal">
-        <div class="tl-year">1950</div>
-        <div class="tl-title">Alan Turing เสนอ Turing Test</div>
-        <p class="tl-desc">Turing ตั้งคำถามว่า "เครื่องจักรสามารถคิดได้หรือไม่?" วางรากฐานทางปรัชญาของ AI สมัยใหม่</p>
+    <div class="page">
+      <!-- KPI -->
+      <div class="kpi-grid">
+        <div class="kpi-card c1">
+          <div class="kpi-label">สินค้าทั้งหมด</div>
+          <div class="kpi-value accent" id="kTotalItems">-</div>
+          <div class="kpi-change up">↑ เพิ่มขึ้น 3 รายการ</div>
+          <div class="kpi-icon">📦</div>
+        </div>
+        <div class="kpi-card c2">
+          <div class="kpi-label">มูลค่าสต็อกรวม</div>
+          <div class="kpi-value green" id="kTotalValue">-</div>
+          <div class="kpi-change up">↑ 8.4% จากเดือนที่แล้ว</div>
+          <div class="kpi-icon">💰</div>
+        </div>
+        <div class="kpi-card c3">
+          <div class="kpi-label">สินค้าใกล้หมด</div>
+          <div class="kpi-value yellow" id="kLow">-</div>
+          <div class="kpi-change down">⚠ ต้องสั่งซื้อเพิ่ม</div>
+          <div class="kpi-icon">⚠️</div>
+        </div>
+        <div class="kpi-card c4">
+          <div class="kpi-label">สินค้าหมด</div>
+          <div class="kpi-value red" id="kOut">-</div>
+          <div class="kpi-change down">↓ ต้องดำเนินการด่วน</div>
+          <div class="kpi-icon">🚨</div>
+        </div>
       </div>
-      <div class="tl-item reveal">
-        <div class="tl-year">1956</div>
-        <div class="tl-title">กำเนิดคำว่า "Artificial Intelligence"</div>
-        <p class="tl-desc">John McCarthy บัญญัติคำว่า AI ในการประชุม Dartmouth Conference จุดเริ่มต้นของสาขาวิชา</p>
+
+      <!-- MAIN GRID -->
+      <div class="dash-grid">
+        <!-- Activity -->
+        <div class="chart-box">
+          <div class="sec-header">
+            <div class="sec-title">กิจกรรมล่าสุด</div>
+            <a href="inventory.html" class="btn-sm">ดูทั้งหมด →</a>
+          </div>
+          <div class="activity-list" id="activityList"></div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="chart-box">
+          <div class="sec-header">
+            <div class="sec-title">สรุปด่วน</div>
+            <div class="ai-chip">AI</div>
+          </div>
+          <div class="quick-stats" id="quickStats"></div>
+        </div>
       </div>
-      <div class="tl-item reveal">
-        <div class="tl-year">1997</div>
-        <div class="tl-title">Deep Blue ชนะ Garry Kasparov</div>
-        <p class="tl-desc">คอมพิวเตอร์ IBM เอาชนะแชมป์หมากรุกโลก เป็นครั้งแรกที่ AI เอาชนะมนุษย์ระดับโลก</p>
-      </div>
-      <div class="tl-item reveal">
-        <div class="tl-year">2012</div>
-        <div class="tl-title">การปฏิวัติ Deep Learning</div>
-        <p class="tl-desc">AlexNet แสดงให้เห็นพลังของ Deep Neural Networks ในการจดจำภาพ เริ่มยุคใหม่ของ AI</p>
-      </div>
-      <div class="tl-item reveal">
-        <div class="tl-year">2022</div>
-        <div class="tl-title">ChatGPT เปลี่ยนโลก</div>
-        <p class="tl-desc">OpenAI เปิดตัว ChatGPT ที่ได้รับผู้ใช้ 100 ล้านคนในเวลาเพียง 2 เดือน AI กลายเป็นกระแสหลัก</p>
-      </div>
-      <div class="tl-item reveal">
-        <div class="tl-year">2025</div>
-        <div class="tl-title">ยุค Agentic AI</div>
-        <p class="tl-desc">AI ไม่ใช่แค่ตอบคำถาม แต่สามารถวางแผน ลงมือทำ และแก้ปัญหาซับซ้อนได้อย่างอิสระ</p>
+
+      <!-- CHART -->
+      <div class="chart-box" style="margin-top:1.5rem">
+        <div class="sec-header">
+          <div class="sec-title">สต็อกตามหมวดหมู่</div>
+          <div class="ai-chip">AI วิเคราะห์</div>
+        </div>
+        <div class="mini-chart" id="categoryChart"></div>
       </div>
     </div>
   </div>
-</section>
 
-<!-- CTA -->
-<section>
-  <div id="cta" class="reveal">
-    <div class="cta-glow"></div>
-    <div class="section-tag" style="justify-content:center">เริ่มต้นวันนี้</div>
-    <h2 class="section-title" style="font-size:clamp(2rem,5vw,3.5rem)">พร้อมสำรวจ<br>โลก AI แล้วหรือยัง?</h2>
-    <p class="section-desc" style="margin:1.5rem auto 2.5rem;text-align:center">
-      AI ไม่ใช่เรื่องของอนาคต — มันอยู่ในมือคุณแล้ววันนี้
-      เริ่มเรียนรู้และปรับตัวเพื่อรับมือกับโลกที่กำลังเปลี่ยนแปลง
-    </p>
-    <a href="#features" class="btn-primary" style="font-size:1rem;padding:1rem 3rem">สำรวจ AI ตอนนี้ →</a>
-  </div>
-</section>
+  <div class="toast" id="toast"><span id="toastIcon">✅</span><span id="toastMsg"></span></div>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">AI_NEXUS</div>
-  <div class="footer-copy">© 2025 AI Nexus — ความรู้เรื่อง AI สำหรับทุกคน</div>
-</footer>
+  <script src="shared.js"></script>
+  <script>
+    const products = loadProducts();
 
-<script>
-  /* ── CANVAS PARTICLE NETWORK ── */
-  const canvas = document.getElementById('bg-canvas');
-  const ctx = canvas.getContext('2d');
-  let W, H, particles = [];
+    function init() {
+      const total = products.length;
+      const value = products.reduce((s, p) => s + p.price * p.stock, 0);
+      const low = products.filter(p => getStatus(p) === 'low').length;
+      const out = products.filter(p => getStatus(p) === 'out').length;
 
-  function resize() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
+      document.getElementById('kTotalItems').textContent = total;
+      document.getElementById('kTotalValue').textContent = '฿' + value.toLocaleString('th-TH');
+      document.getElementById('kLow').textContent = low;
+      document.getElementById('kOut').textContent = out;
 
-  function createParticles() {
-    particles = [];
-    const count = Math.floor((W * H) / 18000);
-    for (let i = 0; i < count; i++) {
-      particles.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        r: Math.random() * 1.5 + 0.5,
-      });
+      const badge = document.getElementById('alertBadge');
+      if (badge) badge.textContent = (low + out) || '-';
+
+      // Activity (mock)
+      const acts = [
+        { icon: '📦', text: 'เพิ่มสินค้า Samsung A55', time: '2 นาทีที่แล้ว', color: 'var(--accent)' },
+        { icon: '⚠️', text: 'สต็อก เสื้อยืด Uniqlo หมด', time: '15 นาทีที่แล้ว', color: 'var(--red)' },
+        { icon: '🔄', text: 'รับสินค้าเข้าคลัง 20 ชิ้น', time: '1 ชม. ที่แล้ว', color: 'var(--green)' },
+        { icon: '⬡', text: 'AI สั่งซื้ออัตโนมัติ 3 รายการ', time: '2 ชม. ที่แล้ว', color: 'var(--accent2)' },
+        { icon: '📋', text: 'ออกใบสั่งขาย #SO-0042', time: '3 ชม. ที่แล้ว', color: 'var(--yellow)' },
+      ];
+      document.getElementById('activityList').innerHTML = acts.map(a =>
+        `<div class="activity-item">
+      <span style="color:${a.color};font-size:1.1rem">${a.icon}</span>
+      <span>${a.text}</span>
+      <span class="activity-time">${a.time}</span>
+    </div>`
+      ).join('');
+
+      // Quick Stats
+      const cats = {};
+      products.forEach(p => { cats[p.category] = (cats[p.category] || 0) + 1; });
+      const topCat = Object.entries(cats).sort((a, b) => b[1] - a[1])[0];
+      const statsData = [
+        { label: 'หมวดหมู่ที่มากที่สุด', val: topCat ? topCat[0] : '-', color: 'var(--accent)' },
+        { label: 'สินค้าพร้อมจำหน่าย', val: products.filter(p => getStatus(p) === 'in').length + ' รายการ', color: 'var(--green)' },
+        { label: 'มูลค่าเฉลี่ย/รายการ', val: total ? '฿' + (value / total).toLocaleString('th-TH', { maximumFractionDigits: 0 }) : '-', color: 'var(--yellow)' },
+        { label: 'แจ้งเตือนทั้งหมด', val: (low + out) + ' รายการ', color: (low + out) > 0 ? 'var(--red)' : 'var(--green)' },
+      ];
+      document.getElementById('quickStats').innerHTML = statsData.map(s =>
+        `<div class="qs-item">
+      <span class="qs-label">${s.label}</span>
+      <span class="qs-val" style="color:${s.color}">${s.val}</span>
+    </div>`
+      ).join('');
+
+      // Chart
+      const entries = Object.entries(cats).sort((a, b) => b[1] - a[1]).slice(0, 6);
+      const maxVal = Math.max(...entries.map(e => e[1]), 1);
+      const colors = ['var(--accent)', 'var(--accent2)', 'var(--green)', 'var(--yellow)', 'var(--accent3)', '#a78bfa'];
+      document.getElementById('categoryChart').innerHTML = entries.map((e, i) => {
+        const h = Math.max(6, Math.round(e[1] / maxVal * 100));
+        const short = e[0].replace('อิเล็กทรอนิกส์', 'อิเล็ก').replace('เครื่องใช้ไฟฟ้า', 'ไฟฟ้า').replace('อาหาร / เครื่องดื่ม', 'อาหาร');
+        return `<div class="bar" style="height:${h}%;background:${colors[i]};opacity:.75" title="${e[0]}: ${e[1]} รายการ">
+      <span class="bar-label">${short}</span>
+    </div>`;
+      }).join('');
     }
-  }
 
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    particles.forEach(p => {
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
-      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0,200,255,0.35)';
-      ctx.fill();
-    });
-    particles.forEach((a, i) => {
-      particles.slice(i + 1).forEach(b => {
-        const dx = a.x - b.x, dy = a.y - b.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120) {
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = `rgba(0,200,255,${0.12 * (1 - dist / 120)})`;
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-        }
-      });
-    });
-    requestAnimationFrame(draw);
-  }
-
-  window.addEventListener('resize', () => { resize(); createParticles(); });
-  resize(); createParticles(); draw();
-
-  /* ── COUNTER ANIMATION ── */
-  function animateCounter(el, target, suffix = '') {
-    let current = 0;
-    const step = target / 60;
-    const timer = setInterval(() => {
-      current += step;
-      if (current >= target) { current = target; clearInterval(timer); }
-      el.textContent = Math.floor(current) + suffix;
-    }, 20);
-  }
-
-  const counters = document.querySelectorAll('.stat-num');
-  const statsObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        const el = e.target;
-        animateCounter(el, +el.dataset.target);
-        statsObs.unobserve(el);
-      }
-    });
-  }, { threshold: 0.5 });
-  counters.forEach(c => statsObs.observe(c));
-
-  /* ── SCROLL REVEAL ── */
-  const reveals = document.querySelectorAll('.reveal');
-  const revObs = new IntersectionObserver(entries => {
-    entries.forEach((e, i) => {
-      if (e.isIntersecting) {
-        setTimeout(() => e.target.classList.add('visible'), i * 80);
-        revObs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.12 });
-  reveals.forEach(r => revObs.observe(r));
-</script>
+    initCanvas();
+    init();
+  </script>
 </body>
+
 </html>

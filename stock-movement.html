@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXUS ERP — รับ / เบิกสินค้า</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Sarabun:wght@300;400;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="shared.css" />
+    <style>
+        .movement-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .move-form {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 1.6rem;
+        }
+
+        .move-form-title {
+            font-family: 'Chakra Petch', monospace;
+            font-size: .9rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+        }
+
+        .move-form-title::before {
+            content: '';
+            width: 3px;
+            height: 16px;
+            background: var(--accent);
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+            padding: .7rem .9rem;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            margin-bottom: .5rem;
+            font-size: .84rem;
+        }
+
+        .history-type {
+            font-family: 'Chakra Petch', monospace;
+            font-size: .7rem;
+            letter-spacing: .08em;
+            padding: .2rem .6rem;
+            border: 1px solid;
+        }
+
+        .history-type.in {
+            color: var(--green);
+            border-color: rgba(0, 232, 150, .3);
+        }
+
+        .history-type.out {
+            color: var(--red);
+            border-color: rgba(255, 68, 102, .3);
+        }
+
+        .history-qty {
+            font-family: 'Chakra Petch', monospace;
+            font-size: .9rem;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .history-time {
+            font-size: .7rem;
+            color: var(--muted);
+            margin-left: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">NEXUS<span>_</span>ERP<div style="flex:1"></div>
+        </div>
+        <div style="padding:.3rem 0"></div>
+        <div class="sidebar-section">หน้าหลัก</div>
+        <a class="nav-item" href="index.html"><span class="icon">⬡</span> Dashboard</a>
+        <a class="nav-item" href="reports.html"><span class="icon">📊</span> รายงาน</a>
+        <div class="sidebar-section">สินค้าคงคลัง</div>
+        <a class="nav-item" href="inventory.html"><span class="icon">📦</span> จัดการสินค้า <span
+                class="nav-badge">AI</span></a>
+        <a class="nav-item active" href="stock-movement.html"><span class="icon">🔄</span> รับ / เบิกสินค้า</a>
+        <a class="nav-item" href="alerts.html"><span class="icon">⚠️</span> แจ้งเตือนสต็อก</a>
+        <a class="nav-item" href="categories.html"><span class="icon">🏷️</span> หมวดหมู่</a>
+        <div class="sidebar-section">จัดซื้อ / ขาย</div>
+        <a class="nav-item" href="purchase-orders.html"><span class="icon">🛒</span> ใบสั่งซื้อ</a>
+        <a class="nav-item" href="sales-orders.html"><span class="icon">📋</span> ใบสั่งขาย</a>
+        <a class="nav-item" href="suppliers.html"><span class="icon">🏭</span> ผู้จัดจำหน่าย</a>
+        <div class="sidebar-section">ระบบ</div>
+        <a class="nav-item" href="settings.html"><span class="icon">⚙️</span> ตั้งค่า</a>
+        <div class="sidebar-bottom">
+            <div class="user-info">
+                <div class="user-avatar">👤</div>
+                <div>
+                    <div class="user-name">Admin</div>
+                    <div class="user-role">ผู้ดูแลระบบ</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-title">รับ / เบิกสินค้า <span>/ Stock Movement</span></div>
+            <div class="notif-btn" onclick="showToast('ตรวจสอบการแจ้งเตือนแล้ว','✅')">🔔<span class="notif-dot"></span>
+            </div>
+        </div>
+
+        <div class="page">
+            <div class="movement-grid">
+
+                <!-- รับสินค้า -->
+                <div class="move-form">
+                    <div class="move-form-title" style="color:var(--green)">📥 รับสินค้าเข้าคลัง</div>
+                    <div class="form-group">
+                        <label class="form-label">สินค้า</label>
+                        <select class="form-select form-input" id="receiveProduct"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">จำนวนรับ (ชิ้น)</label>
+                        <input class="form-input" type="number" id="receiveQty" placeholder="0" min="1" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">หมายเหตุ</label>
+                        <input class="form-input" type="text" id="receiveNote"
+                            placeholder="เช่น รับจากใบสั่งซื้อ #PO-001" />
+                    </div>
+                    <button class="btn-save" style="width:100%" onclick="receiveStock()">✓ บันทึกรับสินค้า</button>
+                </div>
+
+                <!-- เบิกสินค้า -->
+                <div class="move-form">
+                    <div class="move-form-title" style="color:var(--accent3)">📤 เบิกสินค้าออกจากคลัง</div>
+                    <div class="form-group">
+                        <label class="form-label">สินค้า</label>
+                        <select class="form-select form-input" id="issueProduct"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">จำนวนเบิก (ชิ้น)</label>
+                        <input class="form-input" type="number" id="issueQty" placeholder="0" min="1" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">หมายเหตุ</label>
+                        <input class="form-input" type="text" id="issueNote"
+                            placeholder="เช่น เบิกตามใบสั่งขาย #SO-042" />
+                    </div>
+                    <button class="btn-save"
+                        style="width:100%;background:linear-gradient(135deg,var(--accent3),var(--accent2))"
+                        onclick="issueStock()">✓ บันทึกเบิกสินค้า</button>
+                </div>
+            </div>
+
+            <!-- History -->
+            <div style="margin-top:2rem">
+                <div class="sec-header">
+                    <div class="sec-title">ประวัติการเคลื่อนไหว</div>
+                    <button class="btn-sm" onclick="clearHistory()">ล้างประวัติ</button>
+                </div>
+                <div id="historyList" style="margin-top:1rem"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"><span id="toastIcon">✅</span><span id="toastMsg"></span></div>
+
+    <script src="shared.js"></script>
+    <script>
+        let products = loadProducts();
+        let history = JSON.parse(localStorage.getItem('nexus_movement') || '[]');
+
+        function populateSelects() {
+            const opts = products.map(p => `<option value="${p.id}">${p.icon} ${p.name} (สต็อก: ${p.stock})</option>`).join('');
+            document.getElementById('receiveProduct').innerHTML = opts;
+            document.getElementById('issueProduct').innerHTML = opts;
+        }
+
+        function saveHistory() { localStorage.setItem('nexus_movement', JSON.stringify(history)); }
+
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            if (!history.length) { list.innerHTML = '<div style="color:var(--muted);font-size:.85rem;padding:1rem">ยังไม่มีประวัติการเคลื่อนไหว</div>'; return; }
+            list.innerHTML = [...history].reverse().slice(0, 20).map(h =>
+                `<div class="history-item">
+      <span class="history-type ${h.type === 'in' ? 'in' : 'out'}">${h.type === 'in' ? 'รับเข้า' : 'เบิกออก'}</span>
+      <span>${h.icon} ${h.name}</span>
+      <span style="color:var(--muted);font-size:.78rem">${h.note || '-'}</span>
+      <span class="history-qty" style="color:${h.type === 'in' ? 'var(--green)' : 'var(--red)'}">${h.type === 'in' ? '+' : '-'}${h.qty}</span>
+      <span class="history-time">${h.time}</span>
+    </div>`
+            ).join('');
+        }
+
+        function receiveStock() {
+            const id = parseInt(document.getElementById('receiveProduct').value);
+            const qty = parseInt(document.getElementById('receiveQty').value) || 0;
+            if (!qty || qty < 1) { showToast('กรุณาใส่จำนวนที่ถูกต้อง', '❌', true); return; }
+            const p = products.find(x => x.id === id); if (!p) return;
+            p.stock += qty;
+            saveProducts(products);
+            history.push({ type: 'in', id: p.id, icon: p.icon, name: p.name, qty, note: document.getElementById('receiveNote').value, time: new Date().toLocaleString('th-TH') });
+            saveHistory();
+            showToast(`รับ ${p.name} เข้าคลัง ${qty} ชิ้น`, '📥');
+            document.getElementById('receiveQty').value = '';
+            document.getElementById('receiveNote').value = '';
+            populateSelects(); renderHistory();
+        }
+
+        function issueStock() {
+            const id = parseInt(document.getElementById('issueProduct').value);
+            const qty = parseInt(document.getElementById('issueQty').value) || 0;
+            if (!qty || qty < 1) { showToast('กรุณาใส่จำนวนที่ถูกต้อง', '❌', true); return; }
+            const p = products.find(x => x.id === id); if (!p) return;
+            if (p.stock < qty) { showToast(`สต็อกไม่พอ (มี ${p.stock} ชิ้น)`, '❌', true); return; }
+            p.stock -= qty;
+            saveProducts(products);
+            history.push({ type: 'out', id: p.id, icon: p.icon, name: p.name, qty, note: document.getElementById('issueNote').value, time: new Date().toLocaleString('th-TH') });
+            saveHistory();
+            showToast(`เบิก ${p.name} ออกจากคลัง ${qty} ชิ้น`, '📤');
+            document.getElementById('issueQty').value = '';
+            document.getElementById('issueNote').value = '';
+            populateSelects(); renderHistory();
+        }
+
+        function clearHistory() {
+            if (!confirm('ล้างประวัติทั้งหมด?')) return;
+            history = []; saveHistory(); renderHistory();
+            showToast('ล้างประวัติแล้ว', '🗑');
+        }
+
+        initCanvas();
+        populateSelects();
+        renderHistory();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXUS ERP — หมวดหมู่</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Sarabun:wght@300;400;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="shared.css" />
+    <style>
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .cat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 1.4rem;
+            transition: border-color .2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cat-card:hover {
+            border-color: var(--border2);
+        }
+
+        .cat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        .cat-icon {
+            font-size: 2rem;
+            margin-bottom: .6rem;
+        }
+
+        .cat-name {
+            font-family: 'Chakra Petch', monospace;
+            font-size: .92rem;
+            font-weight: 600;
+            margin-bottom: .3rem;
+        }
+
+        .cat-count {
+            font-size: .8rem;
+            color: var(--muted);
+        }
+
+        .cat-value {
+            font-family: 'Chakra Petch', monospace;
+            font-size: .88rem;
+            color: var(--green);
+            margin-top: .4rem;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="bg-canvas"></canvas>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">NEXUS<span>_</span>ERP<div style="flex:1"></div>
+        </div>
+        <div style="padding:.3rem 0"></div>
+        <div class="sidebar-section">หน้าหลัก</div>
+        <a class="nav-item" href="index.html"><span class="icon">⬡</span> Dashboard</a>
+        <a class="nav-item" href="reports.html"><span class="icon">📊</span> รายงาน</a>
+        <div class="sidebar-section">สินค้าคงคลัง</div>
+        <a class="nav-item" href="inventory.html"><span class="icon">📦</span> จัดการสินค้า <span
+                class="nav-badge">AI</span></a>
+        <a class="nav-item" href="stock-movement.html"><span class="icon">🔄</span> รับ / เบิกสินค้า</a>
+        <a class="nav-item" href="alerts.html"><span class="icon">⚠️</span> แจ้งเตือนสต็อก</a>
+        <a class="nav-item active" href="categories.html"><span class="icon">🏷️</span> หมวดหมู่</a>
+        <div class="sidebar-section">จัดซื้อ / ขาย</div>
+        <a class="nav-item" href="purchase-orders.html"><span class="icon">🛒</span> ใบสั่งซื้อ</a>
+        <a class="nav-item" href="sales-orders.html"><span class="icon">📋</span> ใบสั่งขาย</a>
+        <a class="nav-item" href="suppliers.html"><span class="icon">🏭</span> ผู้จัดจำหน่าย</a>
+        <div class="sidebar-section">ระบบ</div>
+        <a class="nav-item" href="settings.html"><span class="icon">⚙️</span> ตั้งค่า</a>
+        <div class="sidebar-bottom">
+            <div class="user-info">
+                <div class="user-avatar">👤</div>
+                <div>
+                    <div class="user-name">Admin</div>
+                    <div class="user-role">ผู้ดูแลระบบ</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-title">หมวดหมู่ <span>/ Category Management</span></div>
+            <div class="notif-btn">🔔<span class="notif-dot"></span></div>
+        </div>
+        <div class="page">
+            <div class="sec-header" style="margin-bottom:1.5rem">
+                <div class="sec-title">หมวดหมู่สินค้าทั้งหมด</div>
+            </div>
+            <div class="cat-grid" id="catGrid"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"><span id="toastIcon">✅</span><span id="toastMsg"></span></div>
+    <script src="shared.js"></script>
+    <script>
+        const products = loadProducts();
+        const catIcons = {
+            'อิเล็กทรอนิกส์': '💻', 'เสื้อผ้า': '👕', 'อาหาร / เครื่องดื่ม': '🍕',
+            'เฟอร์นิเจอร์': '🪑', 'เครื่องใช้ไฟฟ้า': '🔌', 'อื่นๆ': '📦'
+        };
+        const colors = ['var(--accent)', 'var(--accent2)', 'var(--green)', 'var(--yellow)', 'var(--accent3)', '#a78bfa'];
+
+        function buildCats() {
+            const cats = {};
+            products.forEach(p => {
+                if (!cats[p.category]) cats[p.category] = { count: 0, value: 0, out: 0, low: 0 };
+                cats[p.category].count++;
+                cats[p.category].value += p.price * p.stock;
+                if (getStatus(p) === 'out') cats[p.category].out++;
+                if (getStatus(p) === 'low') cats[p.category].low++;
+            });
+            document.getElementById('catGrid').innerHTML = Object.entries(cats).map(([name, d], i) => `
+    <div class="cat-card" style="cursor:pointer" onclick="window.location='inventory.html'">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${colors[i % colors.length]}"></div>
+      <div class="cat-icon">${catIcons[name] || '📦'}</div>
+      <div class="cat-name">${name}</div>
+      <div class="cat-count">${d.count} รายการ</div>
+      <div class="cat-value">฿${d.value.toLocaleString('th-TH')}</div>
+      ${d.out ? `<div style="font-size:.72rem;color:var(--red);margin-top:.3rem">🚨 หมดสต็อก ${d.out} รายการ</div>` : ''}
+      ${d.low ? `<div style="font-size:.72rem;color:var(--yellow);margin-top:.2rem">⚠ ใกล้หมด ${d.low} รายการ</div>` : ''}
+    </div>`
+            ).join('');
+        }
+        initCanvas();
+        buildCats();
+    </script>
+</body>
+
+</html>
