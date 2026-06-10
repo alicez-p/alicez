@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXUS ERP — แจ้งเตือนสต็อก</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Sarabun:wght@300;400;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="shared.css" />
+    <style>
+        /* ── styles เฉพาะหน้าแจ้งเตือน ── */
+        .alert-section {
+            margin-bottom: 2rem;
+        }
+
+        .alert-section-title {
+            font-family: 'Chakra Petch', monospace;
+            font-size: .8rem;
+            letter-spacing: .12em;
+            color: var(--muted);
+            margin-bottom: .8rem;
+            padding-bottom: .4rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .full-alert-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.2rem;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            margin-bottom: .6rem;
+            transition: border-color .2s;
+        }
+
+        .full-alert-item:hover {
+            border-color: var(--border2);
+        }
+
+        .full-alert-item.critical {
+            border-left: 3px solid var(--red);
+        }
+
+        .full-alert-item.warning {
+            border-left: 3px solid var(--yellow);
+        }
+
+        .fa-icon {
+            font-size: 1.4rem;
+        }
+
+        .fa-info {
+            flex: 1;
+        }
+
+        .fa-name {
+            font-size: .92rem;
+            color: var(--text);
+            margin-bottom: .2rem;
+        }
+
+        .fa-meta {
+            font-size: .72rem;
+            color: var(--muted);
+            font-family: 'Chakra Petch', monospace;
+        }
+
+        .fa-stock {
+            font-family: 'Chakra Petch', monospace;
+            font-size: 1.1rem;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .fa-bar {
+            width: 120px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--muted);
+            font-size: .9rem;
+        }
+
+        .empty-state .e-icon {
+            font-size: 2.5rem;
+            margin-bottom: .8rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">NEXUS<span>_</span>ERP<div style="flex:1"></div>
+        </div>
+        <div style="padding:.3rem 0"></div>
+        <div class="sidebar-section">หน้าหลัก</div>
+        <a class="nav-item" href="index.html"><span class="icon">⬡</span> Dashboard</a>
+        <a class="nav-item" href="reports.html"><span class="icon">📊</span> รายงาน</a>
+        <div class="sidebar-section">สินค้าคงคลัง</div>
+        <a class="nav-item" href="inventory.html"><span class="icon">📦</span> จัดการสินค้า <span
+                class="nav-badge">AI</span></a>
+        <a class="nav-item" href="stock-movement.html"><span class="icon">🔄</span> รับ / เบิกสินค้า</a>
+        <a class="nav-item active" href="alerts.html"><span class="icon">⚠️</span> แจ้งเตือนสต็อก <span
+                class="nav-badge" id="alertBadge">-</span></a>
+        <a class="nav-item" href="categories.html"><span class="icon">🏷️</span> หมวดหมู่</a>
+        <div class="sidebar-section">จัดซื้อ / ขาย</div>
+        <a class="nav-item" href="purchase-orders.html"><span class="icon">🛒</span> ใบสั่งซื้อ</a>
+        <a class="nav-item" href="sales-orders.html"><span class="icon">📋</span> ใบสั่งขาย</a>
+        <a class="nav-item" href="suppliers.html"><span class="icon">🏭</span> ผู้จัดจำหน่าย</a>
+        <div class="sidebar-section">ระบบ</div>
+        <a class="nav-item" href="settings.html"><span class="icon">⚙️</span> ตั้งค่า</a>
+        <div class="sidebar-bottom">
+            <div class="user-info">
+                <div class="user-avatar">👤</div>
+                <div>
+                    <div class="user-name">Admin</div>
+                    <div class="user-role">ผู้ดูแลระบบ</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-title">แจ้งเตือนสต็อก <span>/ Real-time Monitoring</span></div>
+            <div class="auto-indicator"><span class="auto-dot"></span> AI MONITOR</div>
+            <button class="topbar-btn" onclick="autoReorderAll()">⚡ สั่งซื้อทั้งหมดอัตโนมัติ</button>
+            <div class="notif-btn" onclick="showToast('ตรวจสอบการแจ้งเตือนแล้ว','✅')">🔔<span class="notif-dot"></span>
+            </div>
+        </div>
+
+        <div class="page">
+            <!-- KPI summary -->
+            <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+                <div class="kpi-card c4">
+                    <div class="kpi-label">สินค้าหมดสต็อก</div>
+                    <div class="kpi-value red" id="kOut">-</div>
+                    <div class="kpi-change down">↓ ต้องดำเนินการด่วน</div>
+                    <div class="kpi-icon">🚨</div>
+                </div>
+                <div class="kpi-card c3">
+                    <div class="kpi-label">สินค้าใกล้หมด</div>
+                    <div class="kpi-value yellow" id="kLow">-</div>
+                    <div class="kpi-change down">⚠ ควรสั่งซื้อเพิ่ม</div>
+                    <div class="kpi-icon">⚠️</div>
+                </div>
+                <div class="kpi-card c2">
+                    <div class="kpi-label">สินค้าปกติ</div>
+                    <div class="kpi-value green" id="kNormal">-</div>
+                    <div class="kpi-change up">✓ พร้อมจำหน่าย</div>
+                    <div class="kpi-icon">✅</div>
+                </div>
+            </div>
+
+            <!-- Out of stock -->
+            <div class="alert-section">
+                <div class="sec-header">
+                    <div class="sec-title" style="color:var(--red)">🚨 หมดสต็อก</div>
+                </div>
+                <div id="outSection"></div>
+            </div>
+
+            <!-- Low stock -->
+            <div class="alert-section">
+                <div class="sec-header">
+                    <div class="sec-title" style="color:var(--yellow)">⚠️ ใกล้หมด</div>
+                </div>
+                <div id="lowSection"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"><span id="toastIcon">✅</span><span id="toastMsg"></span></div>
+
+    <script src="shared.js"></script>
+    <script>
+        let products = loadProducts();
+
+        function renderAlerts() {
+            const out = products.filter(p => getStatus(p) === 'out');
+            const low = products.filter(p => getStatus(p) === 'low').sort((a, b) => a.stock - b.stock);
+
+            document.getElementById('kOut').textContent = out.length;
+            document.getElementById('kLow').textContent = low.length;
+            document.getElementById('kNormal').textContent = products.filter(p => getStatus(p) === 'in').length;
+
+            const badge = document.getElementById('alertBadge');
+            if (badge) badge.textContent = (out.length + low.length) || '-';
+
+            const renderItem = (p, type) => {
+                const pct = p.max > 0 ? Math.round(p.stock / p.max * 100) : 0;
+                const qty = p.max - p.stock;
+                return `<div class="full-alert-item ${type}">
+      <span class="fa-icon">${p.icon}</span>
+      <div class="fa-info">
+        <div class="fa-name">${p.name}</div>
+        <div class="fa-meta">${p.sku} · ${p.category} · สั่งซื้ออัตโนมัติที่ ${p.reorder} ชิ้น</div>
+      </div>
+      <div class="fa-bar">
+        <div class="stock-bar"><div class="stock-fill ${type === 'critical' ? 'r' : 'y'}" style="width:${pct}%"></div></div>
+        <div style="font-size:.65rem;color:var(--muted);margin-top:.2rem;font-family:'Chakra Petch',monospace">${pct}% เต็ม</div>
+      </div>
+      <span class="fa-stock" style="color:${type === 'critical' ? 'var(--red)' : 'var(--yellow)'}">${p.stock} ชิ้น</span>
+      <button class="alert-reorder" onclick="reorder(${p.id},${qty})">สั่งซื้อ ${qty} ชิ้น</button>
+    </div>`;
+            };
+
+            document.getElementById('outSection').innerHTML = out.length
+                ? out.map(p => renderItem(p, 'critical')).join('')
+                : '<div class="empty-state"><div class="e-icon">✅</div>ไม่มีสินค้าหมดสต็อก</div>';
+
+            document.getElementById('lowSection').innerHTML = low.length
+                ? low.map(p => renderItem(p, 'warning')).join('')
+                : '<div class="empty-state"><div class="e-icon">✅</div>สินค้าทุกรายการมีสต็อกเพียงพอ</div>';
+        }
+
+        function reorder(id, qty) {
+            const p = products.find(x => x.id === id); if (!p) return;
+            showToast(`AI สั่งซื้อ ${p.name} จำนวน ${qty} ชิ้น`, '⬡');
+            setTimeout(() => {
+                p.stock = p.max; saveProducts(products); renderAlerts();
+                showToast(`✓ รับสินค้า ${p.name} เข้าคลังแล้ว`, '✅');
+            }, 2000);
+        }
+
+        function autoReorderAll() {
+            const toOrder = products.filter(p => getStatus(p) !== 'in');
+            if (!toOrder.length) { showToast('สต็อกปกติทุกรายการ', '✅'); return; }
+            showToast(`AI กำลังสั่งซื้ออัตโนมัติ ${toOrder.length} รายการ...`, '⬡');
+            setTimeout(() => {
+                toOrder.forEach(p => { p.stock = p.max || 50; });
+                saveProducts(products); renderAlerts();
+                showToast(`AI สั่งซื้อ ${toOrder.length} รายการเรียบร้อย`, '✅');
+            }, 2200);
+        }
+
+        initCanvas();
+        renderAlerts();
+    </script>
+</body>
+
+</html>
