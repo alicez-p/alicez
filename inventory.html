@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXUS ERP — จัดการสินค้า</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Sarabun:wght@300;400;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="shared.css" />
+</head>
+
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">NEXUS<span>_</span>ERP<div style="flex:1"></div>
+        </div>
+        <div style="padding:.3rem 0"></div>
+        <div class="sidebar-section">หน้าหลัก</div>
+        <a class="nav-item" href="index.html"><span class="icon">⬡</span> Dashboard</a>
+        <a class="nav-item" href="reports.html"><span class="icon">📊</span> รายงาน</a>
+        <div class="sidebar-section">สินค้าคงคลัง</div>
+        <a class="nav-item active" href="inventory.html"><span class="icon">📦</span> จัดการสินค้า <span
+                class="nav-badge">AI</span></a>
+        <a class="nav-item" href="stock-movement.html"><span class="icon">🔄</span> รับ / เบิกสินค้า</a>
+        <a class="nav-item" href="alerts.html"><span class="icon">⚠️</span> แจ้งเตือนสต็อก <span class="nav-badge"
+                id="alertBadge">-</span></a>
+        <a class="nav-item" href="categories.html"><span class="icon">🏷️</span> หมวดหมู่</a>
+        <div class="sidebar-section">จัดซื้อ / ขาย</div>
+        <a class="nav-item" href="purchase-orders.html"><span class="icon">🛒</span> ใบสั่งซื้อ</a>
+        <a class="nav-item" href="sales-orders.html"><span class="icon">📋</span> ใบสั่งขาย</a>
+        <a class="nav-item" href="suppliers.html"><span class="icon">🏭</span> ผู้จัดจำหน่าย</a>
+        <div class="sidebar-section">ระบบ</div>
+        <a class="nav-item" href="settings.html"><span class="icon">⚙️</span> ตั้งค่า</a>
+        <div class="sidebar-bottom">
+            <div class="user-info">
+                <div class="user-avatar">👤</div>
+                <div>
+                    <div class="user-name">Admin</div>
+                    <div class="user-role">ผู้ดูแลระบบ</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div class="topbar-title">จัดการสินค้า <span>/ คลังสินค้าหลัก</span></div>
+            <div class="auto-indicator" title="ระบบ AI ตรวจสอบสต็อกอัตโนมัติ">
+                <span class="auto-dot"></span> AI AUTO SYNC
+            </div>
+            <div class="search-box">
+                <span style="color:var(--muted);font-size:.85rem">🔍</span>
+                <input type="text" placeholder="ค้นหาสินค้า, SKU..." id="searchInput" oninput="filterTable()" />
+            </div>
+            <button class="topbar-btn" onclick="openModal()">+ เพิ่มสินค้า</button>
+            <div class="notif-btn" onclick="showToast('ตรวจสอบการแจ้งเตือนแล้ว','✅')">
+                🔔 <span class="notif-dot"></span>
+            </div>
+        </div>
+
+        <!-- PAGE -->
+        <div class="page">
+
+            <!-- KPI -->
+            <div class="kpi-grid">
+                <div class="kpi-card c1">
+                    <div class="kpi-label">สินค้าทั้งหมด</div>
+                    <div class="kpi-value accent" id="totalItems">-</div>
+                    <div class="kpi-change up">↑ เพิ่มขึ้น 3 รายการ</div>
+                    <div class="kpi-icon">📦</div>
+                </div>
+                <div class="kpi-card c2">
+                    <div class="kpi-label">มูลค่าสต็อกรวม</div>
+                    <div class="kpi-value green" id="totalValue">-</div>
+                    <div class="kpi-change up">↑ 8.4% จากเดือนที่แล้ว</div>
+                    <div class="kpi-icon">💰</div>
+                </div>
+                <div class="kpi-card c3">
+                    <div class="kpi-label">สินค้าใกล้หมด</div>
+                    <div class="kpi-value yellow" id="lowItems">-</div>
+                    <div class="kpi-change down">⚠ ต้องสั่งซื้อเพิ่ม</div>
+                    <div class="kpi-icon">⚠️</div>
+                </div>
+                <div class="kpi-card c4">
+                    <div class="kpi-label">สินค้าหมด</div>
+                    <div class="kpi-value red" id="outItems">-</div>
+                    <div class="kpi-change down">↓ ต้องดำเนินการด่วน</div>
+                    <div class="kpi-icon">🚨</div>
+                </div>
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-wrap">
+                <div class="table-toolbar">
+                    <div class="filter-tabs">
+                        <div class="filter-tab active" onclick="setFilter('all',this)">ทั้งหมด</div>
+                        <div class="filter-tab" onclick="setFilter('in',this)">พร้อมจำหน่าย</div>
+                        <div class="filter-tab" onclick="setFilter('low',this)">ใกล้หมด</div>
+                        <div class="filter-tab" onclick="setFilter('out',this)">หมดสต็อก</div>
+                    </div>
+                    <div class="ai-chip">AI จัดการอัตโนมัติ</div>
+                    <div style="margin-left:auto;display:flex;gap:.6rem;align-items:center">
+                        <button class="btn-sm" onclick="autoReorder()">⚡ สั่งซื้ออัตโนมัติ</button>
+                        <button class="btn-sm" onclick="exportCSV()">↓ Export</button>
+                    </div>
+                    <div class="table-info" id="tableInfo">แสดง 0 รายการ</div>
+                </div>
+
+                <div style="overflow-x:auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('name')">สินค้า ↕</th>
+                                <th onclick="sortTable('category')">หมวดหมู่ ↕</th>
+                                <th onclick="sortTable('price')">ราคา ↕</th>
+                                <th onclick="sortTable('stock')">สต็อก ↕</th>
+                                <th>สถานะ</th>
+                                <th onclick="sortTable('value')">มูลค่า ↕</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <div class="page-info" id="pageInfo">หน้า 1 จาก 1</div>
+                    <div class="page-btns" id="pageBtns"></div>
+                </div>
+            </div>
+
+            <!-- BOTTOM GRID -->
+            <div class="bottom-grid">
+                <div class="chart-box">
+                    <div class="sec-header">
+                        <div class="sec-title">สต็อกตามหมวดหมู่</div>
+                        <div class="ai-chip">AI วิเคราะห์</div>
+                    </div>
+                    <div class="mini-chart" id="categoryChart"></div>
+                </div>
+                <div class="chart-box">
+                    <div class="sec-header">
+                        <div class="sec-title">แจ้งเตือนสต็อก</div>
+                        <div class="auto-indicator"><span class="auto-dot"></span> Real-time</div>
+                    </div>
+                    <div class="alert-list" id="alertList">
+                        <div style="color:var(--muted);font-size:.85rem;padding:.5rem 0">ไม่มีการแจ้งเตือนในขณะนี้</div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /page -->
+    </div><!-- /main -->
+
+    <!-- MODAL เพิ่ม / แก้ไขสินค้า -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
+        <div class="modal">
+            <div class="modal-header">
+                <span id="modalTitle">เพิ่มสินค้าใหม่</span>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editId" />
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">ชื่อสินค้า *</label>
+                        <input class="form-input" type="text" id="fName" placeholder="เช่น สมาร์ทโฟน Samsung A55" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">รหัส SKU</label>
+                        <input class="form-input" type="text" id="fSku" placeholder="auto" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">หมวดหมู่</label>
+                        <select class="form-select form-input" id="fCategory">
+                            <option>อิเล็กทรอนิกส์</option>
+                            <option>เสื้อผ้า</option>
+                            <option>อาหาร / เครื่องดื่ม</option>
+                            <option>เฟอร์นิเจอร์</option>
+                            <option>เครื่องใช้ไฟฟ้า</option>
+                            <option>อื่นๆ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ไอคอน</label>
+                        <select class="form-select form-input" id="fIcon">
+                            <option>📱</option>
+                            <option>💻</option>
+                            <option>👕</option>
+                            <option>🍕</option>
+                            <option>🪑</option>
+                            <option>📦</option>
+                            <option>🔧</option>
+                            <option>🎮</option>
+                            <option>🧴</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">ราคา (บาท) *</label>
+                        <input class="form-input" type="number" id="fPrice" placeholder="0" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">จำนวนสต็อก *</label>
+                        <input class="form-input" type="number" id="fStock" placeholder="0" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">จุดสั่งซื้ออัตโนมัติ (AI)</label>
+                        <input class="form-input" type="number" id="fReorder" placeholder="เช่น 10" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">สต็อกสูงสุด</label>
+                        <input class="form-input" type="number" id="fMax" placeholder="เช่น 100" />
+                    </div>
+                </div>
+                <div
+                    style="background:rgba(0,200,255,.05);border:1px solid var(--border);padding:.8rem 1rem;font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:.5rem">
+                    <span style="color:var(--accent2)">⬡</span>
+                    AI จะแจ้งเตือนและสั่งซื้ออัตโนมัติเมื่อสต็อกต่ำกว่าจุดสั่งซื้อ
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+                <button class="btn-save" onclick="saveProduct()">💾 บันทึก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"><span id="toastIcon">✅</span><span id="toastMsg"></span></div>
+
+    <script src="shared.js"></script>
+    <script>
+        /* ══════════════════════════════════════
+           inventory.js  — logic ของหน้าจัดการสินค้า
+           ══════════════════════════════════════ */
+
+        let products = loadProducts();
+        let nextId = Math.max(...products.map(p => p.id), 0) + 1;
+        let currentFilter = 'all';
+        let currentPage = 1;
+        const PER_PAGE = 6;
+        let sortKey = '', sortAsc = true;
+
+        /* ── Helpers ── */
+        function getFiltered() {
+            let data = [...products];
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            if (q) data = data.filter(p =>
+                p.name.toLowerCase().includes(q) ||
+                p.sku.toLowerCase().includes(q) ||
+                p.category.toLowerCase().includes(q)
+            );
+            if (currentFilter !== 'all') data = data.filter(p => getStatus(p) === currentFilter);
+            if (sortKey) {
+                data.sort((a, b) => {
+                    let av = a[sortKey], bv = b[sortKey];
+                    if (sortKey === 'value') { av = a.price * a.stock; bv = b.price * b.stock; }
+                    if (typeof av === 'string') return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+                    return sortAsc ? av - bv : bv - av;
+                });
+            }
+            return data;
+        }
+
+        /* ── Render Table ── */
+        function renderTable() {
+            const data = getFiltered();
+            const totalPages = Math.max(1, Math.ceil(data.length / PER_PAGE));
+            if (currentPage > totalPages) currentPage = 1;
+            const slice = data.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
+            const body = document.getElementById('tableBody');
+
+            body.innerHTML = slice.map(p => {
+                const st = getStatus(p);
+                const pct = p.max > 0 ? Math.round(p.stock / p.max * 100) : 0;
+                const barC = st === 'out' ? 'r' : st === 'low' ? 'y' : 'g';
+                const lbl = st === 'out' ? 'หมดสต็อก' : st === 'low' ? 'ใกล้หมด' : 'พร้อมจำหน่าย';
+                const val = (p.price * p.stock).toLocaleString('th-TH');
+                return `<tr onclick="editProduct(${p.id})">
+      <td><div class="prod-cell">
+        <div class="prod-img">${p.icon}</div>
+        <div><div class="prod-name">${p.name}</div><div class="prod-sku">${p.sku}</div></div>
+      </div></td>
+      <td><span style="font-size:.82rem;color:var(--muted)">${p.category}</span></td>
+      <td><span style="font-family:'Chakra Petch',monospace;font-size:.88rem">฿${p.price.toLocaleString('th-TH')}</span></td>
+      <td><div class="stock-bar-wrap">
+        <div class="stock-bar"><div class="stock-fill ${barC}" style="width:${pct}%"></div></div>
+        <span class="stock-num" style="color:${st === 'out' ? 'var(--red)' : st === 'low' ? 'var(--yellow)' : 'var(--text)'}">${p.stock}</span>
+      </div></td>
+      <td><span class="badge ${st}">${lbl}</span></td>
+      <td><span style="font-family:'Chakra Petch',monospace;font-size:.85rem;color:var(--green)">฿${val}</span></td>
+      <td onclick="event.stopPropagation()"><div class="action-btns">
+        <button class="act-btn" onclick="editProduct(${p.id})">✏️</button>
+        <button class="act-btn" onclick="adjustStock(${p.id})">±</button>
+        <button class="act-btn danger" onclick="deleteProduct(${p.id})">🗑</button>
+      </div></td>
+    </tr>`;
+            }).join('');
+
+            document.getElementById('tableInfo').textContent = `แสดง ${slice.length} จาก ${data.length} รายการ`;
+            document.getElementById('pageInfo').textContent = `หน้า ${currentPage} จาก ${totalPages}`;
+
+            // Pagination
+            const pb = document.getElementById('pageBtns');
+            pb.innerHTML = '';
+            const prev = document.createElement('button'); prev.className = 'pg-btn'; prev.textContent = '‹';
+            prev.onclick = () => { if (currentPage > 1) { currentPage--; renderTable(); } };
+            pb.appendChild(prev);
+            for (let i = 1; i <= totalPages; i++) {
+                const b = document.createElement('button');
+                b.className = 'pg-btn' + (i === currentPage ? ' active' : '');
+                b.textContent = i;
+                b.onclick = (pg => () => { currentPage = pg; renderTable(); })(i);
+                pb.appendChild(b);
+            }
+            const next = document.createElement('button'); next.className = 'pg-btn'; next.textContent = '›';
+            next.onclick = () => { if (currentPage < totalPages) { currentPage++; renderTable(); } };
+            pb.appendChild(next);
+
+            updateKPI(); renderAlerts(); renderChart();
+            updateAlertBadge();
+        }
+
+        /* ── KPI ── */
+        function updateKPI() {
+            const total = products.length;
+            const value = products.reduce((s, p) => s + p.price * p.stock, 0);
+            const low = products.filter(p => getStatus(p) === 'low').length;
+            const out = products.filter(p => getStatus(p) === 'out').length;
+            document.getElementById('totalItems').textContent = total;
+            document.getElementById('totalValue').textContent = '฿' + value.toLocaleString('th-TH');
+            document.getElementById('lowItems').textContent = low;
+            document.getElementById('outItems').textContent = out;
+        }
+
+        /* ── Alert Badge (sidebar) ── */
+        function updateAlertBadge() {
+            const n = products.filter(p => getStatus(p) !== 'in').length;
+            const b = document.getElementById('alertBadge');
+            if (b) b.textContent = n || '-';
+        }
+
+        /* ── Alerts Panel ── */
+        function renderAlerts() {
+            const alerts = products.filter(p => getStatus(p) !== 'in').sort((a, b) => a.stock - b.stock);
+            const list = document.getElementById('alertList');
+            if (!alerts.length) { list.innerHTML = '<div style="color:var(--muted);font-size:.85rem;padding:.5rem 0">✅ สต็อกปกติทุกรายการ</div>'; return; }
+            list.innerHTML = alerts.map(p => {
+                const st = getStatus(p);
+                return `<div class="alert-item ${st === 'out' ? 'critical' : ''}">
+      <span class="alert-icon">${p.icon}</span>
+      <div style="flex:1"><div class="alert-name">${p.name}</div><div style="font-size:.72rem;color:var(--muted)">${p.sku}</div></div>
+      <span class="alert-stock ${st === 'out' ? 'critical-s' : 'low-s'}">${p.stock} ชิ้น</span>
+      <button class="alert-reorder" onclick="reorderProduct(${p.id})">สั่งซื้อ</button>
+    </div>`;
+            }).join('');
+        }
+
+        /* ── Chart ── */
+        function renderChart() {
+            const cats = {};
+            products.forEach(p => { cats[p.category] = (cats[p.category] || 0) + (p.price * p.stock); });
+            const entries = Object.entries(cats).sort((a, b) => b[1] - a[1]).slice(0, 6);
+            const maxVal = Math.max(...entries.map(e => e[1]), 1);
+            const colors = ['var(--accent)', 'var(--accent2)', 'var(--green)', 'var(--yellow)', 'var(--accent3)', '#a78bfa'];
+            document.getElementById('categoryChart').innerHTML = entries.map((e, i) => {
+                const h = Math.max(6, Math.round(e[1] / maxVal * 100));
+                const short = e[0].replace('อิเล็กทรอนิกส์', 'อิเล็ก').replace('เครื่องใช้ไฟฟ้า', 'ไฟฟ้า').replace('อาหาร / เครื่องดื่ม', 'อาหาร');
+                return `<div class="bar" style="height:${h}%;background:${colors[i]};opacity:.75" title="${e[0]}: ฿${e[1].toLocaleString('th-TH')}">
+      <span class="bar-label">${short}</span>
+    </div>`;
+            }).join('');
+        }
+
+        /* ── Filter / Sort ── */
+        function setFilter(f, el) {
+            currentFilter = f; currentPage = 1;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active'); renderTable();
+        }
+        function filterTable() { currentPage = 1; renderTable(); }
+        function sortTable(key) {
+            if (sortKey === key) sortAsc = !sortAsc; else { sortKey = key; sortAsc = true; }
+            renderTable();
+        }
+
+        /* ── Modal ── */
+        function openModal() {
+            document.getElementById('editId').value = '';
+            document.getElementById('modalTitle').textContent = 'เพิ่มสินค้าใหม่';
+            ['fName', 'fSku', 'fPrice', 'fStock', 'fReorder', 'fMax'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('fCategory').value = 'อิเล็กทรอนิกส์';
+            document.getElementById('fIcon').value = '📱';
+            document.getElementById('modalOverlay').classList.add('open');
+        }
+        function editProduct(id) {
+            const p = products.find(x => x.id === id); if (!p) return;
+            document.getElementById('editId').value = id;
+            document.getElementById('modalTitle').textContent = 'แก้ไขสินค้า';
+            document.getElementById('fName').value = p.name;
+            document.getElementById('fSku').value = p.sku;
+            document.getElementById('fCategory').value = p.category;
+            document.getElementById('fIcon').value = p.icon;
+            document.getElementById('fPrice').value = p.price;
+            document.getElementById('fStock').value = p.stock;
+            document.getElementById('fReorder').value = p.reorder;
+            document.getElementById('fMax').value = p.max;
+            document.getElementById('modalOverlay').classList.add('open');
+        }
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+        function closeModalOnBg(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+
+        function saveProduct() {
+            const name = document.getElementById('fName').value.trim();
+            const price = parseFloat(document.getElementById('fPrice').value) || 0;
+            const stock = parseInt(document.getElementById('fStock').value) || 0;
+            if (!name) { showToast('กรุณากรอกชื่อสินค้า', '❌', true); return; }
+            const id = document.getElementById('editId').value;
+            const sku = document.getElementById('fSku').value.trim() || ('SKU-' + String(nextId).padStart(3, '0'));
+            const obj = {
+                name, sku,
+                category: document.getElementById('fCategory').value,
+                icon: document.getElementById('fIcon').value,
+                price, stock,
+                reorder: parseInt(document.getElementById('fReorder').value) || 0,
+                max: parseInt(document.getElementById('fMax').value) || Math.max(stock * 2, 100),
+            };
+            if (id) {
+                const idx = products.findIndex(x => x.id === parseInt(id));
+                products[idx] = { ...products[idx], ...obj };
+                showToast('อัพเดตสินค้าเรียบร้อย', '✅');
+            } else {
+                obj.id = nextId++;
+                products.push(obj);
+                showToast('เพิ่มสินค้าใหม่เรียบร้อย', '✅');
+            }
+            saveProducts(products);
+            closeModal(); renderTable();
+            setTimeout(() => {
+                if (getStatus(obj) === 'low' || getStatus(obj) === 'out')
+                    showToast('AI: ตรวจพบสต็อกต่ำ — แนะนำสั่งซื้อเพิ่ม', '⬡');
+            }, 1200);
+        }
+
+        function deleteProduct(id) {
+            if (!confirm('ลบสินค้านี้ออกจากระบบ?')) return;
+            products = products.filter(p => p.id !== id);
+            saveProducts(products);
+            showToast('ลบสินค้าเรียบร้อย', '🗑'); renderTable();
+        }
+
+        function adjustStock(id) {
+            const p = products.find(x => x.id === id); if (!p) return;
+            const val = prompt(`ปรับสต็อก "${p.name}" (ใส่ +/- จำนวน เช่น +20 หรือ -5)\nสต็อกปัจจุบัน: ${p.stock}`);
+            if (val === null) return;
+            const delta = parseInt(val);
+            if (isNaN(delta)) { showToast('กรุณาใส่ตัวเลข', '❌', true); return; }
+            p.stock = Math.max(0, p.stock + delta);
+            saveProducts(products);
+            showToast(`ปรับสต็อก ${p.name} → ${p.stock} ชิ้น`, '📦');
+            renderTable();
+            setTimeout(() => {
+                const st = getStatus(p);
+                if (st === 'low') showToast(`AI แจ้งเตือน: ${p.name} ใกล้หมดแล้ว`, '⚠️');
+                if (st === 'out') showToast(`AI แจ้งเตือนด่วน: ${p.name} หมดสต็อก!`, '🚨', true);
+            }, 800);
+        }
+
+        function reorderProduct(id) {
+            const p = products.find(x => x.id === id); if (!p) return;
+            const qty = p.max - p.stock;
+            showToast(`AI สั่งซื้อ ${p.name} จำนวน ${qty} ชิ้นอัตโนมัติ`, '⬡');
+            setTimeout(() => {
+                p.stock = p.max; saveProducts(products); renderTable();
+                showToast(`✓ รับสินค้า ${p.name} เข้าคลังแล้ว`, '✅');
+            }, 2000);
+        }
+
+        function autoReorder() {
+            const toOrder = products.filter(p => getStatus(p) !== 'in');
+            if (!toOrder.length) { showToast('สต็อกปกติทุกรายการ ไม่จำเป็นต้องสั่งซื้อ', '✅'); return; }
+            showToast(`AI กำลังสั่งซื้ออัตโนมัติ ${toOrder.length} รายการ...`, '⬡');
+            setTimeout(() => {
+                toOrder.forEach(p => { p.stock = p.max || 50; });
+                saveProducts(products); renderTable();
+                showToast(`AI สั่งซื้อและอัพเดตสต็อก ${toOrder.length} รายการเรียบร้อย`, '✅');
+            }, 2200);
+        }
+
+        function exportCSV() {
+            const headers = ['ชื่อสินค้า', 'SKU', 'หมวดหมู่', 'ราคา', 'สต็อก', 'สถานะ', 'มูลค่า'];
+            const rows = products.map(p => [p.name, p.sku, p.category, p.price, p.stock, getStatus(p), p.price * p.stock]);
+            const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'inventory.csv'; a.click();
+            showToast('Export สำเร็จ', '📥');
+        }
+
+        /* ── Init ── */
+        initCanvas();
+        renderTable();
+
+        /* AI: periodic stock simulation */
+        setInterval(() => {
+            if (!products.length) return;
+            const p = products[Math.floor(Math.random() * products.length)];
+            const delta = -(Math.floor(Math.random() * 3) + 1);
+            p.stock = Math.max(0, p.stock + delta);
+            saveProducts(products); renderTable();
+            if (getStatus(p) === 'out') showToast(`AI แจ้งเตือน: ${p.name} หมดสต็อก`, '🚨', true);
+            else if (getStatus(p) === 'low') showToast(`AI: ${p.name} ใกล้หมด (${p.stock} ชิ้น)`, '⚠️');
+        }, 15000);
+    </script>
+</body>
+
+</html>
